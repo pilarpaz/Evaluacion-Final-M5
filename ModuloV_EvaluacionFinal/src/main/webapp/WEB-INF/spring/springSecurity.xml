@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bean:beans xmlns:bean="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd 
+		http://www.springframework.org/schema/security 
+		http://www.springframework.org/schema/security/spring-security.xsd">
+
+	<http auto-config="true">
+		<intercept-url pattern="/" access="permitAll" />
+		<intercept-url pattern="/acceder" access="permitAll" />
+		<intercept-url pattern="/iniciocli/**" access="hasRole('CLI')" />
+		<intercept-url pattern="/creacontacto" access="hasRole('CLI')" />
+		<intercept-url pattern="/procesacontacto/**" access="hasRole('CLI')" />
+		<intercept-url pattern="/creacapacitacion/**" access="hasRole('CLI')" />
+		<intercept-url pattern="/listacapacitaciones/**" access="hasRole('CLI')" />
+		<intercept-url pattern="/procesacrear/**" access="hasRole('CLI')" />
+		<intercept-url pattern="/inicioadmi/**" access="hasRole('ADMIN')" />
+		<intercept-url pattern="/listausuarios/**" access="hasRole('ADMIN')" />
+		<intercept-url pattern="/creausuario/**" access="hasRole('ADMIN')" />
+		<intercept-url pattern="/creapago/**" access="hasRole('ADMIN')" />
+		<intercept-url pattern="/listapago/**" access="hasRole('ADMIN')" />
+		<intercept-url pattern="/iniciopro/**" access="hasRole('PRO')" />
+		<intercept-url pattern="/creavisita/**" access="hasRole('PRO')" />
+		<intercept-url pattern="/agregarchequeo/**" access="hasRole('PRO')" />
+		<intercept-url pattern="/responderchecklist/**" access="hasRole('PRO')" />
+
+		<form-login 
+		login-page="/login"
+		authentication-failure-url="/error"
+		       username-parameter="username"
+		       password-parameter="password"
+		/>
+		<csrf disabled="true"/>
+		<logout logout-success-url="/acceder" />
+		
+	</http>
+	 
+	  
+	<authentication-manager>
+		<authentication-provider>
+			<password-encoder hash="bcrypt" />
+			<jdbc-user-service data-source-ref="dataSource"
+				users-by-username-query="select login as username, clave as password, 1 as enabled from usuarios where login=?"
+		
+				authorities-by-username-query="select u.login as username, ur.rol as authority from usuarios u, perfilusuario ur 
+		where u.usuarioid = ur.usuarioid and u.usuarioid = (SELECT usuarioid from usuarios where login = ?)" />
+		</authentication-provider>
+	</authentication-manager>
+	
+	<!--
+	 <authentication-manager>
+		<authentication-provider>
+		<user-service>
+			<user name="manuel" password="{noop}1234" authorities="ROLE_ADMIN" />
+			<user name="javier" password="{noop}5678" authorities="ROLE_PRO" />
+			<user name="diego" password="{noop}5678" authorities="ROLE_CLI" />
+		</user-service>
+		</authentication-provider>
+	</authentication-manager>-->
+	
+	
+</bean:beans>
+
